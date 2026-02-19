@@ -2,15 +2,23 @@
 language: "en-US"
 
 reviews:
-  profile: assertive          # Thorough reviews for a backend/AI project like yours
-  request_changes_workflow: true   # CodeRabbit formally "Requests Changes" on issues
-                                   # and auto-approves once all comments are resolved
+  profile: "assertive"
+  request_changes_workflow: true   # ← This makes CR "Request Changes" and AUTO-APPROVE once resolved
   high_level_summary: true
-  poem: false                 # Optional: disable the poem in walkthrough
-  auto_pause_after_reviewed_commits: 0  # Don't pause reviews after 5 commits
+  review_status: true
+  poem: false
+  auto_pause_after_reviewed_commits: 0  # Disable auto-pause
+
+  auto_review:              # ← THIS was missing from your nested reviews block
+    enabled: true
+    auto_incremental_review: true   # Re-reviews on every new push
+    drafts: false
 
   path_instructions:
     - path: "**/*.ts"
       instructions: "Review for proper async/await handling, error propagation, and TypeScript strict typing."
     - path: "**/*.py"
       instructions: "Check for proper exception handling, type hints, and PEP8 compliance."
+
+chat:
+  auto_reply: true
