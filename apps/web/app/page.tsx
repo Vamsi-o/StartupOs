@@ -52,7 +52,7 @@ export default function Home() {
               width={20}
               height={20}
             />
-            Deploy now
+            Deploy now 
           </a>
           <a
             href="https://turborepo.dev/docs?utm_source"
@@ -60,7 +60,7 @@ export default function Home() {
             rel="noopener noreferrer"
             className={styles.secondary}
           >
-            Read our docs
+            Read our documentation
           </a>
         </div>
         <Button appName="web" className={styles.secondary}>
