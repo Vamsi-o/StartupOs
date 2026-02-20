@@ -1,7 +1,4 @@
 {
-  "eslint.workingDirectories": [
-    {
-      "mode": "auto"
-    }
-  ]
+  // "prisma.pinToPrisma6": true,
+  "terminal.integrated.cwd": "${workspaceFolder}",
 }

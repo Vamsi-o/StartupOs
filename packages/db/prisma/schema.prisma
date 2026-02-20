@@ -1,0 +1,136 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  // provider = "prisma-client"
+   provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  
+  users          User[]
+  customers      Customer[]
+  messages       Message[]
+  tokens         TokenBalance[]
+  guardrails     Guardrail[]
+  auditLogs      AuditLog[]
+  
+  @@map("organizations")
+}
+
+model User {
+  id       String @id @default(uuid())
+  orgId    String
+  email    String
+  name     String
+  role     String @default("member")
+  
+  organization Organization @relation(fields: [orgId], references: [id])
+  
+  @@unique([orgId, email])
+  @@index([orgId])
+  @@map("users")
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  orgId     String
+  name      String?
+  email     String?
+  phone     String?
+  createdAt DateTime @default(now())
+  
+  organization Organization @relation(fields: [orgId], references: [id])
+  messages     Message[]
+  
+  @@index([orgId])
+  @@index([orgId, email])
+  @@index([orgId, phone])
+  @@map("customers")
+}
+
+model Message {
+  id          String   @id @default(uuid())
+  orgId       String
+  customerId  String
+  channelType String
+  direction   String
+  content     String   @db.Text
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  
+  organization     Organization @relation(fields: [orgId], references: [id])
+  customer         Customer @relation(fields: [customerId], references: [id])
+  classification   Classification?
+  
+  @@index([orgId, customerId, createdAt])
+  @@index([orgId, channelType])
+  @@map("messages")
+}
+
+model Classification {
+  id         String   @id @default(uuid())
+  messageId  String   @unique
+  intent     String
+  sentiment  String
+  confidence Float
+  createdAt  DateTime @default(now())
+  
+  message Message @relation(fields: [messageId], references: [id])
+  
+  @@map("classifications")
+}
+
+model TokenBalance {
+  id       String @id @default(uuid())
+  orgId    String
+  balance  Int    @default(0)
+  updatedAt DateTime @updatedAt
+  
+  organization Organization @relation(fields: [orgId], references: [id])
+  
+  @@unique([orgId])
+  @@map("token_balances")
+}
+
+model Guardrail {
+  id        String  @id @default(uuid())
+  orgId     String
+  name      String
+  type      String
+  condition Json
+  action    String
+  isActive  Boolean @default(true)
+  
+  organization Organization @relation(fields: [orgId], references: [id])
+  
+  @@index([orgId, isActive])
+  @@map("guardrails")
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  orgId       String
+  agentId     String
+  action      String
+  result      String
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  
+  organization Organization @relation(fields: [orgId], references: [id])
+  
+  @@index([orgId, createdAt])
+  @@index([orgId, agentId])
+  @@map("audit_logs")
+}
